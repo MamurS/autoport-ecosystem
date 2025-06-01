@@ -1,0 +1,3 @@
+[submodule "autoport-backend"]
+	path = autoport-backend
+	url = git@github.com:MamurS/autoport-backend.git
