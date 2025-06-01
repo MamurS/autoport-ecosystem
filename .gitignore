@@ -1,0 +1,47 @@
+# General
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Flutter
+autoport-mobile/.dart_tool/
+autoport-mobile/.flutter-plugins
+autoport-mobile/.flutter-plugins-dependencies
+autoport-mobile/.packages
+autoport-mobile/.pub-cache/
+autoport-mobile/.pub/
+autoport-mobile/build/
+autoport-mobile/ios/Pods/
+autoport-mobile/android/.gradle/
+autoport-mobile/android/app/build/
+
+# Node.js
+autoport-telegram/node_modules/
+autoport-telegram/npm-debug.log*
+autoport-telegram/yarn-debug.log*
+autoport-telegram/yarn-error.log*
+
+# Python
+autoport-backend/__pycache__/
+autoport-backend/*.pyc
+autoport-backend/*.pyo
+autoport-backend/*.pyd
+autoport-backend/.Python
+autoport-backend/env/
+autoport-backend/venv/
+autoport-backend/.env/
+autoport-backend/.venv/
+autoport-backend/pip-log.txt
+autoport-backend/pip-delete-this-directory.txt
+autoport-backend/.tox/
+autoport-backend/.coverage
+autoport-backend/htmlcov/
+autoport-backend/.pytest_cache/ 
