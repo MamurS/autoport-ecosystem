@@ -1,0 +1,18 @@
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>AutoPort needs your location to find nearby rides and show your position on the map.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>AutoPort needs your location to find nearby rides and show your position on the map.</string>
+<key>NSCameraUsageDescription</key>
+<string>AutoPort needs camera access to scan documents and take profile pictures.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>AutoPort needs photo library access to upload profile pictures and documents.</string>
+<key>NSContactsUsageDescription</key>
+<string>AutoPort needs contacts access to help you invite friends.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>AutoPort needs microphone access for voice messages.</string>
+<key>UIBackgroundModes</key>
+<array>
+    <string>location</string>
+    <string>fetch</string>
+    <string>remote-notification</string>
+</array> 

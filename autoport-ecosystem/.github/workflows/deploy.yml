@@ -1,0 +1,105 @@
+name: AutoPort CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10.0'
+          channel: 'stable'
+      - name: Install dependencies
+        run: |
+          cd autoport-mobile
+          flutter pub get
+      - name: Run code generation
+        run: |
+          cd autoport-mobile
+          flutter pub run build_runner build --delete-conflicting-outputs
+      - name: Run tests
+        run: |
+          cd autoport-mobile
+          flutter test
+      - name: Run analysis
+        run: |
+          cd autoport-mobile
+          flutter analyze
+
+  build-android:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10.0'
+          channel: 'stable'
+      - name: Build APK
+        run: |
+          cd autoport-mobile
+          flutter build apk --release
+      - name: Build App Bundle
+        run: |
+          cd autoport-mobile
+          flutter build appbundle --release
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: autoport-mobile/build/app/outputs/flutter-apk/app-release.apk
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-bundle
+          path: autoport-mobile/build/app/outputs/bundle/release/app-release.aab
+
+  build-ios:
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10.0'
+          channel: 'stable'
+      - name: Install CocoaPods
+        run: |
+          cd autoport-mobile/ios
+          pod install
+      - name: Build iOS
+        run: |
+          cd autoport-mobile
+          flutter build ios --release --no-codesign
+
+  deploy-tma:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: |
+          cd autoport-telegram
+          npm install
+      - name: Build TMA
+        run: |
+          cd autoport-telegram
+          npm run build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./autoport-telegram/webapp 
