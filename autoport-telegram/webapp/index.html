@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoPort</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --primary-color: #1B8F9F;
+            --background-color: #F8F9FA;
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --border-color: #E9ECEF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .screen {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .greeting {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .trip-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .driver-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .driver-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .driver-name {
+            font-weight: 600;
+        }
+
+        .driver-rating {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .verified-badge {
+            font-size: 12px;
+            color: var(--success-color);
+        }
+
+        .trip-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 8px 0;
+        }
+
+        .trip-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+        }
+
+        .trip-time {
+            font-weight: 600;
+        }
+
+        .trip-price {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .trip-actions {
+            margin-top: 16px;
+        }
+
+        #bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 12px;
+        }
+
+        .error {
+            color: var(--error-color);
+            text-align: center;
+            padding: 16px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 16px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 32px 16px;
+            color: var(--text-secondary);
+        }
+
+        .swap-button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 8px;
+            margin: 0 8px;
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .search-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .search-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .loading-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--background-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        .loading-text {
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .skeleton-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .trip-card.skeleton {
+            height: 200px;
+        }
+
+        .trip-card.skeleton .driver-info,
+        .trip-card.skeleton .trip-meta,
+        .trip-card.skeleton .trip-details {
+            height: 24px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div id="loading-text" class="loading-text">Loading...</div>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen">
+        <div class="header">
+            <div id="greeting" class="greeting">👋 Hi there!</div>
+        </div>
+        <div class="search-card">
+            <div class="input-group">
+                <label for="from-input">From</label>
+                <input type="text" id="from-input" placeholder="Departure city">
+            </div>
+            <div style="text-align: center;">
+                <button class="swap-button" onclick="swapLocations()">⇅</button>
+            </div>
+            <div class="input-group">
+                <label for="to-input">To</label>
+                <input type="text" id="to-input" placeholder="Destination city">
+            </div>
+            <div class="input-group">
+                <label for="date-input">Date</label>
+                <input type="date" id="date-input">
+            </div>
+            <div class="input-group">
+                <label for="passengers-input">Passengers</label>
+                <input type="number" id="passengers-input" min="1" value="1">
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results Screen -->
+    <div id="search-screen" class="screen hidden">
+        <div class="search-header">
+            <div>
+                <div id="search-route-title" class="search-title"></div>
+                <div id="search-date" class="search-meta"></div>
+                <div id="search-passengers" class="search-meta"></div>
+            </div>
+        </div>
+        <div id="trips-loading" class="loading hidden">Loading trips...</div>
+        <div id="trips-error" class="error hidden"></div>
+        <div id="trips-empty" class="empty-state hidden">
+            No trips found for your search criteria.
+        </div>
+        <div id="trips-list"></div>
+    </div>
+
+    <!-- Trip Details Screen -->
+    <div id="trip-details-screen" class="screen hidden">
+        <div id="trip-details-content"></div>
+    </div>
+
+    <!-- Profile Screen -->
+    <div id="profile-screen" class="screen hidden">
+        <div class="header">
+            <div id="user-phone" class="greeting"></div>
+        </div>
+        <div class="search-card">
+            <button class="btn btn-secondary btn-full" onclick="becomeDriver()">Become a Driver</button>
+        </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div id="bottom-actions" class="hidden">
+        <button class="btn btn-secondary" onclick="shareTrip()">Share</button>
+        <button class="btn btn-primary" onclick="bookTrip()">Book Now</button>
+    </div>
+
+    <script>
+        // Telegram Web App initialization
+        let tg = window.Telegram.WebApp;
+
+        // Initialize the app
+        tg.ready();
+        tg.expand();
+
+        // Set theme colors
+        tg.setHeaderColor('#1B8F9F'); // Assuming this is your primary color
+        tg.setBackgroundColor('#F8F9FA'); // Assuming this is your background color
+
+        // Current state
+        let currentScreen = 'home';
+        let currentTrip = null; // To store details of a trip when viewed
+        let searchParams = {}; // To store parameters of the last search
+        let apiTokens = { accessToken: null, refreshToken: null }; // To store API tokens
+
+        // Backend base URL
+        const BASE_API_URL = 'https://autoport-api.onrender.com/api/v1'; // ENSURE THIS IS CORRECT
+
+        // Initialize
+        function init() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('date-input');
+            if (dateInput) dateInput.value = today;
+
+            const greetingEl = document.getElementById('greeting');
+            const userPhoneEl = document.getElementById('user-phone'); // Assuming this ID exists on profile screen
+
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                const name = user.first_name || user.username || 'User';
+                if (greetingEl) greetingEl.textContent = `👋 Hi ${name}!`;
+                if (userPhoneEl) userPhoneEl.textContent = user.id ? `ID: ${user.id}` : 'Connected via Telegram';
+            } else if (greetingEl) {
+                 greetingEl.textContent = `👋 Hi there!`;
+            }
+            
+            loadTokens();
+            if (apiTokens.accessToken) {
+                console.log("Access token found. User might be logged in.");
+                // Optionally, try to fetch user profile from your backend to confirm valid session
+            } else {
+                console.log("No access token. User may need to login for certain actions.");
+            }
+
+            const mainButton = tg.MainButton;
+            if (mainButton) {
+                mainButton.setText('Search Trips');
+                mainButton.onClick(searchTrips);
+                mainButton.show();
+            }
+            updateBackButton();
+        }
+
+        // --- Authentication Functions ---
+        function storeTokens(accessToken, refreshToken) {
+            apiTokens.accessToken = accessToken;
+            apiTokens.refreshToken = refreshToken;
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('accessToken', accessToken);
+                    if (refreshToken) {
+                        localStorage.setItem('refreshToken', refreshToken);
+                    }
+                }
+            } catch (e) { console.error("localStorage not available or error:", e); }
+        }
+
+        function loadTokens() {
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    apiTokens.accessToken = localStorage.getItem('accessToken');
+                    apiTokens.refreshToken = localStorage.getItem('refreshToken');
+                }
+            } catch (e) { console.error("localStorage not available or error:", e); }
+        }
+
+        function clearTokens() {
+            apiTokens.accessToken = null;
+            apiTokens.refreshToken = null;
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                }
+            } catch (e) { console.error("localStorage not available or error:", e); }
+            if (document.getElementById('greeting')) document.getElementById('greeting').textContent = `👋 Hi there!`;
+        }
+
+        async function performTelegramLogin() {
+            // This function should be triggered by a login button if explicit login is needed,
+            // or called automatically when an authenticated action is attempted without a token.
+            if (!tg.initData && !tg.initDataUnsafe?.hash) { // initDataUnsafe.hash for local testing, initData for production
+                tg.showAlert('Telegram user data is not available for authentication.');
+                return false;
+            }
+            
+            // Use tg.initData for server-side validation. For client-side, tg.initDataUnsafe might be used.
+            // The full initData string should be sent to backend for validation.
+            const initDataString = tg.initData; 
+
+            showGlobalLoading(true, 'Authenticating...');
+            try {
+                const response = await fetch(`${BASE_API_URL}/auth/telegram/login`, { // Ensure this endpoint exists on your backend
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ init_data: initDataString }), // Backend expects 'init_data'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Authentication failed due to server error.' }));
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+
+                const authData = await response.json(); // Expects { access_token, refresh_token, user (optional) }
+                storeTokens(authData.access_token, authData.refresh_token);
+                
+                const user = authData.user || (tg.initDataUnsafe && tg.initDataUnsafe.user);
+                if (user && document.getElementById('greeting')) {
+                     document.getElementById('greeting').textContent = `👋 Hi ${user.first_name || user.username || 'User'}!`;
+                }
+                // tg.showAlert('Login successful!'); // Maybe too intrusive, confirm visually
+                return true;
+            } catch (error) {
+                console.error('Telegram login error:', error);
+                tg.showAlert(`Login failed: ${error.message}`);
+                clearTokens();
+                return false;
+            } finally {
+                showGlobalLoading(false);
+            }
+        }
+
+        async function fetchWithAuth(url, options = {}) {
+            if (!apiTokens.accessToken) {
+                const loggedIn = await performTelegramLogin();
+                if (!loggedIn) {
+                    throw new Error('Authentication required and failed.');
+                }
+            }
+
+            const headers = {
+                ...options.headers,
+                'Authorization': `Bearer ${apiTokens.accessToken}`,
+            };
+            if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
+                headers['Content-Type'] = 'application/json';
+                options.body = JSON.stringify(options.body);
+            }
+
+
+            let response = await fetch(url, { ...options, headers });
+
+            if (response.status === 401 && apiTokens.refreshToken) {
+                console.log('Access token might be expired. Attempting refresh...');
+                try {
+                    const refreshResponse = await fetch(`${BASE_API_URL}/auth/refresh`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ refresh_token: apiTokens.refreshToken }),
+                    });
+                    if (!refreshResponse.ok) {
+                         clearTokens(); // Refresh failed, clear tokens
+                         tg.showAlert('Your session has expired. Please try logging in again.');
+                         throw new Error('Failed to refresh token, session expired.');
+                    }
+                    const newAuthData = await refreshResponse.json(); // Expects { access_token, refresh_token }
+                    storeTokens(newAuthData.access_token, newAuthData.refresh_token);
+                    
+                    headers['Authorization'] = `Bearer ${apiTokens.accessToken}`; // Use new token
+                    response = await fetch(url, { ...options, headers }); // Retry original request
+
+                } catch (refreshError) {
+                    console.error('Token refresh error:', refreshError);
+                    clearTokens();
+                    // tg.showAlert('Session expired. Please re-authenticate.');
+                    throw new Error('Session expired or refresh failed.');
+                }
+            }
+            return response;
+        }
+
+
+        // Navigation functions
+        function showHome() {
+            hideAllScreens();
+            const screen = document.getElementById('home-screen');
+            if (screen) screen.classList.remove('hidden');
+            currentScreen = 'home';
+            if (tg.MainButton) {
+                tg.MainButton.setText('Search Trips');
+                tg.MainButton.onClick(searchTrips);
+                tg.MainButton.show();
+            }
+            hideBottomActions();
+            updateBackButton();
+        }
+
+        function showSearchScreenUI() {
+            hideAllScreens();
+            const screen = document.getElementById('search-screen');
+            if (screen) screen.classList.remove('hidden');
+            currentScreen = 'search';
+            if (tg.MainButton) tg.MainButton.hide();
+            hideBottomActions();
+            updateBackButton();
+        }
+
+        async function showTripDetails(tripId) {
+            const tripListContainer = document.getElementById('trips-list');
+            let existingTripData = null;
+            if (tripListContainer) {
+                 existingTripData = Array.from(tripListContainer.children)
+                                        .map(card => card.tripData)
+                                        .find(t => t && t.id === tripId);
+            }
+
+            if (existingTripData) {
+                currentTrip = existingTripData;
+                populateAndShowTripDetailsUI(currentTrip);
+            } else {
+                await fetchAndShowTripDetails(tripId);
+            }
+        }
+
+        async function fetchAndShowTripDetails(tripId) {
+            showGlobalLoading(true, 'Loading trip details...');
+            const detailsContent = document.getElementById('trip-details-content');
+            if (detailsContent) detailsContent.innerHTML = ''; 
+
+            hideAllScreens(); // Show details screen shell first
+            const screen = document.getElementById('trip-details-screen');
+            if (screen) screen.classList.remove('hidden');
+            currentScreen = 'trip-details';
+            updateBackButton(); 
+            if (tg.MainButton) tg.MainButton.hide();
+
+
+            try {
+                const response = await fetchWithAuth(`${BASE_API_URL}/trips/${tripId}`);
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`Failed to fetch trip details. Status: ${response.status}. ${errorBody}`);
+                }
+                const tripData = await response.json();
+                currentTrip = tripData.trip || tripData; // Adapt if API nests it under "trip"
+                
+                populateAndShowTripDetailsUI(currentTrip);
+
+            } catch (error) {
+                console.error('Error fetching trip details:', error);
+                if (detailsContent) detailsContent.innerHTML = `<div class="error">Could not load trip details: ${error.message}</div>`;
+                tg.showAlert(`Error: ${error.message}`);
+                hideBottomActions();
+            } finally {
+                showGlobalLoading(false);
+            }
+        }
+
+        function populateAndShowTripDetailsUI(trip) {
+            const detailsContent = document.getElementById('trip-details-content');
+            if (detailsContent) detailsContent.innerHTML = generateTripDetailsHTML(trip);
+
+            // These were outside the try/finally in fetchAndShowTripDetails, ensure they are called correctly
+            hideAllScreens();
+            const screen = document.getElementById('trip-details-screen');
+            if (screen) screen.classList.remove('hidden');
+            currentScreen = 'trip-details';
+            updateBackButton();
+            if (tg.MainButton) tg.MainButton.hide();
+
+            if (trip) { // Only show bottom actions if trip details loaded successfully
+                showBottomActions();
+                updateBookingButton(trip);
+            } else {
+                hideBottomActions();
+            }
+        }
+
+        function showProfile() {
+            hideAllScreens();
+            const screen = document.getElementById('profile-screen');
+            if (screen) screen.classList.remove('hidden');
+            currentScreen = 'profile';
+            if (tg.MainButton) tg.MainButton.hide();
+            hideBottomActions();
+            updateBackButton();
+        }
+
+        function hideAllScreens() {
+            const screens = ['home-screen', 'search-screen', 'trip-details-screen', 'profile-screen'];
+            screens.forEach(screenId => {
+                const screen = document.getElementById(screenId);
+                if (screen) screen.classList.add('hidden');
+            });
+        }
+
+        function showBottomActions() {
+            const actions = document.getElementById('bottom-actions');
+            if (actions) actions.classList.remove('hidden');
+            document.body.style.paddingBottom = '80px';
+        }
+
+        function hideBottomActions() {
+            const actions = document.getElementById('bottom-actions');
+            if (actions) actions.classList.add('hidden');
+            document.body.style.paddingBottom = '0';
+        }
+
+        let mainButtonOriginalText = 'Search Trips'; // Store default
+        function showGlobalLoading(isLoading, message = 'Loading...') {
+            const mainButton = tg.MainButton;
+            if (!mainButton) return;
+
+            if (isLoading) {
+                mainButtonOriginalText = mainButton.text; // Save current text if any
+                mainButton.setText(message);
+                mainButton.showProgress(false); // show a spinner on the button
+                mainButton.disable();
+            } else {
+                mainButton.setText(mainButtonOriginalText); // Restore original text
+                mainButton.hideProgress();
+                mainButton.enable();
+            }
+        }
+
+        // Search functions
+        function searchTrips() {
+            const fromInput = document.getElementById('from-input');
+            const toInput = document.getElementById('to-input');
+            const dateInput = document.getElementById('date-input');
+            const passengersInput = document.getElementById('passengers-input');
+
+            const from = fromInput ? fromInput.value : '';
+            const to = toInput ? toInput.value : '';
+            let date = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+            const passengers = passengersInput ? passengersInput.value : '1';
+
+            if (!from || !to) {
+                tg.showAlert('Please fill in departure and destination cities.');
+                return;
+            }
+            searchParams = { from, to, date, passengers };
+            performSearch();
+        }
+
+        function searchRoute(from, to) {
+            const fromInput = document.getElementById('from-input');
+            const toInput = document.getElementById('to-input');
+            const dateInput = document.getElementById('date-input');
+            const passengersInput = document.getElementById('passengers-input');
+
+            if (fromInput) fromInput.value = from;
+            if (toInput) toInput.value = to;
+            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            if (passengersInput) passengersInput.value = "1";
+            searchTrips();
+        }
+
+        async function performSearch() {
+            if (!validateSearchForm()) return;
+
+            showSearchScreenUI();
+
+            const searchRouteTitle = document.getElementById('search-route-title');
+            const searchDateEl = document.getElementById('search-date');
+            const searchPassengersEl = document.getElementById('search-passengers');
+
+            if (searchRouteTitle) searchRouteTitle.textContent = `${searchParams.from} → ${searchParams.to}`;
+            if (searchDateEl) {
+                const dateObj = new Date(searchParams.date);
+                const todayObj = new Date();
+                const dateText = dateObj.toDateString() === todayObj.toDateString() ? 'Today' : searchParams.date;
+                searchDateEl.textContent = dateText;
+            }
+            if (searchPassengersEl) searchPassengersEl.textContent = `${searchParams.passengers} passenger${searchParams.passengers > 1 ? 's' : ''}`;
+
+            const tripsListContainer = document.getElementById('trips-list');
+            const tripsLoadingDiv = document.getElementById('trips-loading');
+            const tripsErrorDiv = document.getElementById('trips-error');
+            const tripsEmptyDiv = document.getElementById('trips-empty');
+
+            if (tripsLoadingDiv) tripsLoadingDiv.classList.remove('hidden');
+            if (tripsErrorDiv) tripsErrorDiv.classList.add('hidden');
+            if (tripsEmptyDiv) tripsEmptyDiv.classList.add('hidden');
+            if (tripsListContainer) {
+                tripsListContainer.innerHTML = generateSkeletonTripCards();
+            }
+
+            try {
+                const query = new URLSearchParams({
+                    from_location_name: searchParams.from,
+                    to_location_name: searchParams.to,
+                    departure_date: searchParams.date,
+                    seats_required: searchParams.passengers
+                }).toString();
+
+                const response = await fetchWithAuth(`${BASE_API_URL}/trips/search?${query}`);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: "Failed to load trips. Please check your search criteria." }));
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                displayTripResults(result.items || []);
+
+            } catch (error) {
+                console.error('Error performing search:', error);
+                if (tripsErrorDiv) {
+                    tripsErrorDiv.textContent = getFriendlyErrorMessage(error);
+                    tripsErrorDiv.classList.remove('hidden');
+                }
+            } finally {
+                if (tripsLoadingDiv) tripsLoadingDiv.classList.add('hidden');
+            }
+        }
+
+        function displayTripResults(trips) {
+            const listContainer = document.getElementById('trips-list');
+            const tripsEmptyDiv = document.getElementById('trips-empty');
+
+            if (!listContainer || !tripsEmptyDiv) return;
+
+            if (!trips || trips.length === 0) {
+                tripsEmptyDiv.classList.remove('hidden');
+                listContainer.innerHTML = '';
+                return;
+            }
+            tripsEmptyDiv.classList.add('hidden');
+            listContainer.innerHTML = trips.map(trip => {
+                const cardHTML = generateTripCardHTML(trip);
+                const tempDiv = document.createElement('div'); 
+                tempDiv.innerHTML = cardHTML.trim();
+                const cardElement = tempDiv.firstChild;
+                if (cardElement) cardElement.tripData = trip; 
+                return cardElement ? cardElement.outerHTML : '';
+            }).join('');
+        }
+
+        function formatTimeFromDateTime(isoDateTimeString) {
+            if (!isoDateTimeString) return 'N/A';
+            try {
+                const date = new Date(isoDateTimeString);
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            } catch (e) { return 'Invalid Date'; }
+        }
+
+        function generateTripCardHTML(trip) {
+            // API field names are snake_case, e.g. trip.driver_full_name, trip.price_per_seat
+            const departureTime = formatTimeFromDateTime(trip.departure_datetime);
+            const arrivalTime = formatTimeFromDateTime(trip.estimated_arrival_datetime);
+            const driverName = trip.driver?.full_name || 'Driver';
+            const driverAvgRating = trip.driver?.average_rating ? trip.driver.average_rating.toFixed(1) : 'N/A';
+            const driverReviewCount = trip.driver?.review_count || 0;
+            const carMake = trip.car?.make || 'Car';
+            const carModel = trip.car?.model || '';
+            const carColor = trip.car?.color || '';
+            const pricePerSeat = trip.price_per_seat || 0;
+            const availableSeats = trip.available_seats === undefined ? 'N/A' : trip.available_seats;
+            const totalSeats = trip.total_seats_offered === undefined ? 'N/A' : trip.total_seats_offered;
+            const isDriverVerified = trip.driver?.is_verified || false;
+
+            return `
+                <div class="trip-card" onclick="showTripDetails('${trip.id}')">
+                    <div class="trip-header">
+                        <div class="driver-info">
+                            <div class="driver-avatar">${driverName.substring(0, 1)}${driverName.split(' ')[1] ? driverName.split(' ')[1].substring(0,1) : ''}</div>
+                            <div>
+                                <div class="driver-name">${driverName}</div>
+                                <div class="driver-rating">⭐ ${driverAvgRating} (${driverReviewCount} reviews)</div>
+                            </div>
+                        </div>
+                        ${isDriverVerified ? '<div class="verified-badge">✅ Verified</div>' : ''}
+                    </div>
+                    <div class="trip-meta">
+                        <div>🚗 ${carMake} ${carModel}, ${carColor}</div>
+                    </div>
+                    <div class="trip-details">
+                        <div class="trip-time">🕐 ${departureTime} → ${arrivalTime}</div>
+                        <div class="trip-price">${pricePerSeat} UZS/seat</div> 
+                    </div>
+                    <div class="trip-meta">
+                        <div>👥 ${availableSeats}/${totalSeats} seats left</div>
+                    </div>
+                    <div class="trip-actions">
+                        <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); quickBook('${trip.id}', ${pricePerSeat}, '${driverName}', ${availableSeats})">📱 Book Now</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateTripDetailsHTML(trip) {
+            const departureTime = formatTimeFromDateTime(trip.departure_datetime);
+            const arrivalTime = formatTimeFromDateTime(trip.estimated_arrival_datetime);
+            const driverName = trip.driver?.full_name || 'Driver';
+            const driverAvgRating = trip.driver?.average_rating ? trip.driver.average_rating.toFixed(1) : 'N/A';
+            const driverReviewCount = trip.driver?.review_count || 0;
+            const carMake = trip.car?.make || 'Car';
+            const carModel = trip.car?.model || '';
+            const carColor = trip.car?.color || '';
+            const fromLoc = trip.from_location_text || searchParams.from || 'Departure';
+            const toLoc = trip.to_location_text || searchParams.to || 'Arrival';
+            const licensePlate = trip.car?.license_plate || 'N/A';
+            const additionalInfo = trip.additional_info || 'No additional information provided.';
+
+            return `
+                <div class="search-card">
+                    <div class="trip-header">
+                        <div class="driver-info">
+                            <div class="driver-avatar" style="width: 48px; height: 48px; font-size: 16px;">${driverName.substring(0,1)}${driverName.split(' ')[1] ? driverName.split(' ')[1].substring(0,1) : ''}</div>
+                            <div>
+                                <div style="font-size: 18px; font-weight: 600;">${driverName}</div>
+                                <div class="driver-rating">⭐ ${driverAvgRating} (${driverReviewCount} reviews)</div>
+                                ${trip.driver?.is_verified ? '<div class="verified-badge">✅ Verified Driver</div>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin: 16px 0; padding: 12px; background: var(--background-color); border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 8px;">🚗 Vehicle Information</div>
+                        <div>${carMake} ${carModel}, ${carColor}</div>
+                        <div>License Plate: ${licensePlate}</div>
+                        ${trip.car?.is_verified ? '<div style="color: var(--success-color); font-size: 12px;">✅ Verified Car</div>' : ''}
+                    </div>
+                    <div style="margin: 16px 0; padding: 12px; background: var(--background-color); border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 8px;">🗺️ Route</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><div>📍 ${fromLoc}</div><div style="color: var(--text-secondary);">${departureTime}</div></div>
+                        <div style="margin: 8px 0; color: var(--text-secondary); font-size: 12px;">├── Journey ──────────────</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><div>📍 ${toLoc}</div><div style="color: var(--text-secondary);">${arrivalTime} (estimated)</div></div>
+                    </div>
+                     <div style="margin: 16px 0; padding: 12px; background: var(--background-color); border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 8px;">ℹ️ Additional Info</div>
+                        <div>${additionalInfo}</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0;">
+                        <div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--primary-color);">${trip.price_per_seat} UZS per seat</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">👥 ${trip.available_seats} available of ${trip.total_seats_offered}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Utility functions
+        function swapLocations() {
+            const fromInput = document.getElementById('from-input');
+            const toInput = document.getElementById('to-input');
+            if (!fromInput || !toInput) return;
+            const temp = fromInput.value;
+            fromInput.value = toInput.value;
+            toInput.value = temp;
+        }
+
+        function updateBookingButton(trip) {
+            if (!trip) return;
+            const passengersInput = document.getElementById('passengers-input');
+            const passengers = parseInt(passengersInput ? passengersInput.value : searchParams.passengers || '1') || 1; 
+            const totalPrice = (trip.price_per_seat || 0) * passengers;
+            const bookButton = document.querySelector('#bottom-actions .btn-primary');
+            if (bookButton) {
+              bookButton.textContent = `Book ${passengers} seat${passengers > 1 ? 's' : ''} - ${totalPrice} UZS`;
+            }
+        }
+
+        // Action functions
+        function quickBook(tripId, pricePerSeat, driverName, availableSeats) {
+            const passengersToBook = parseInt(searchParams.passengers || "1");
+            if (passengersToBook > availableSeats) {
+                tg.showAlert(`Only ${availableSeats} seat(s) available. You tried to book ${passengersToBook}.`);
+                return;
+            }
+            const totalPrice = pricePerSeat * passengersToBook;
+            tg.showConfirm(
+                `Book ${passengersToBook} seat${passengersToBook > 1 ? 's' : ''} with ${driverName} for ${totalPrice} UZS?`,
+                async (confirmed) => {
+                    if (confirmed) await processBooking(tripId, passengersToBook, totalPrice);
+                }
+            );
+        }
+
+        function bookTrip() {
+            if (currentTrip) {
+                const passengersToBook = parseInt(searchParams.passengers || "1");
+                 if (passengersToBook > currentTrip.available_seats_count) { // API field
+                    tg.showAlert(`Only ${currentTrip.available_seats_count} seat(s) available.`);
+                    return;
+                }
+                const totalPrice = (currentTrip.price_per_seat || 0) * passengersToBook;
+                processBooking(currentTrip.id, passengersToBook, totalPrice);
+            }
+        }
+
+        async function processBooking(tripId, seatsBooked, totalPrice) {
+            showLoadingOverlay('Processing your booking...');
+            try {
+                const response = await fetchWithAuth(`${BASE_API_URL}/bookings`, {
+                    method: 'POST',
+                    body: { 
+                        trip_id: tripId, 
+                        seats_booked: seatsBooked 
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Booking failed. Please try again.' }));
+                    throw new Error(errorData.detail || `Booking creation failed. Status: ${response.status}`);
+                }
+                const bookingResult = await response.json();
+                
+                const bookingId = bookingResult.id;
+                const trip = bookingResult.trip;
+                const passenger = bookingResult.passenger;
+
+                tg.showAlert(`Booking confirmed for ${seatsBooked} seat(s)! Total: ${totalPrice} UZS. Booking ID: ${bookingId}`);
+                showHome();
+            } catch (error) {
+                console.error('Error processing booking:', error);
+                tg.showAlert(getFriendlyErrorMessage(error));
+            } finally {
+                hideLoadingOverlay();
+            }
+        }
+
+        function shareTrip() {
+            if (currentTrip) {
+                const fromLoc = currentTrip.from_location.name || searchParams.from || 'Departure';
+                const toLoc = currentTrip.to_location.name || searchParams.to || 'Arrival';
+                const shareText = `🚗 Trip: ${fromLoc} → ${toLoc}\n` +
+                    `🕐 ${formatTimeFromDateTime(currentTrip.departure_datetime)}\n` +
+                    `👤 ${currentTrip.driver_full_name || 'Driver'} (⭐ ${(currentTrip.driver_avg_rating || 0).toFixed(1)})\n` +
+                    `💰 ${currentTrip.price_per_seat || 0} UZS/seat\n\n` +
+                    `Find this trip on AutoPort!`;
+                
+                tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareText)}`);
+            }
+        }
+
+        function becomeDriver() { tg.showAlert('Driver registration is available in the main AutoPort app.'); }
+        function editProfile() { tg.showAlert('Profile editing is available in the main AutoPort app.'); }
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        tg.onEvent('backButtonClicked', () => {
+            if (currentScreen === 'trip-details') showSearchScreenUI();
+            else if (currentScreen === 'search' || currentScreen === 'profile') showHome();
+        });
+
+        function updateBackButton() {
+            if (currentScreen === 'home') tg.BackButton.hide();
+            else tg.BackButton.show();
+        }
+
+        // Add these functions after the existing script content
+        function showLoadingOverlay(message = 'Loading...') {
+            const overlay = document.getElementById('loading-overlay');
+            const loadingText = document.getElementById('loading-text');
+            if (overlay && loadingText) {
+                loadingText.textContent = message;
+                overlay.classList.add('visible');
+            }
+        }
+
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.classList.remove('visible');
+            }
+        }
+
+        function generateSkeletonTripCards(count = 3) {
+            return Array(count).fill().map(() => `
+                <div class="trip-card skeleton">
+                    <div class="driver-info skeleton-loading"></div>
+                    <div class="trip-meta skeleton-loading"></div>
+                    <div class="trip-details skeleton-loading"></div>
+                </div>
+            `).join('');
+        }
+
+        function getFriendlyErrorMessage(error) {
+            if (error.message.includes('401')) {
+                return 'Your session has expired. Please try again.';
+            } else if (error.message.includes('403')) {
+                return 'You don\'t have permission to perform this action.';
+            } else if (error.message.includes('404')) {
+                return 'The requested resource was not found.';
+            } else if (error.message.includes('500')) {
+                return 'An error occurred on our server. Please try again later.';
+            } else if (error.message.includes('network')) {
+                return 'Network error. Please check your internet connection.';
+            }
+            return error.message || 'An unexpected error occurred. Please try again.';
+        }
+
+        function validateSearchForm() {
+            const fromInput = document.getElementById('from-input');
+            const toInput = document.getElementById('to-input');
+            const dateInput = document.getElementById('date-input');
+            const passengersInput = document.getElementById('passengers-input');
+
+            if (!fromInput || !toInput || !dateInput || !passengersInput) return false;
+
+            const from = fromInput.value.trim();
+            const to = toInput.value.trim();
+            const date = dateInput.value;
+            const passengers = parseInt(passengersInput.value);
+
+            if (!from || !to) {
+                tg.showAlert('Please enter both departure and destination cities.');
+                return false;
+            }
+
+            if (from === to) {
+                tg.showAlert('Departure and destination cities cannot be the same.');
+                return false;
+            }
+
+            const selectedDate = new Date(date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (selectedDate < today) {
+                tg.showAlert('Please select a future date for your trip.');
+                return false;
+            }
+
+            if (isNaN(passengers) || passengers < 1 || passengers > 4) {
+                tg.showAlert('Please enter a valid number of passengers (1-4).');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html> 
